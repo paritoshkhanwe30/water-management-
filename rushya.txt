@@ -1,0 +1,469 @@
+html:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Supply Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="calendar-container">
+            <div id="calendar"></div>
+        </div>
+
+        <div class="content">
+            <h2>Water Supply Management System</h2>
+            <input type="text" id="searchBox" placeholder="Search customer by name...">
+
+            <form id="customerForm">
+                <label for="customerName">Customer Name:</label>
+                <input type="text" id="customerName" pattern="[A-Za-z\s]+" title="Please enter only alphabets" required>
+
+                <label for="waterAmount">Water (liters):</label>
+                <input type="number" id="waterAmount" min="0" step="any" required>
+
+                <label for="amountPaid">Amount Paid (INR):</label>
+                <input type="number" id="amountPaid" min="0" step="any" required>
+
+                <button type="submit">Add/Update Customer</button>
+            </form>
+
+            <div id="customerRecords"></div>
+
+            <div id="totals">
+                <h3>Total Amount Paid: <span id="totalPaid">0</span> INR</h3>
+                <h3>Total Amount Remaining: <span id="totalRemaining">0</span> INR</h3>
+            </div>
+
+            <button id="downloadExcel">Download as Excel</button>
+            <button id="downloadPDF">Download as PDF</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+css:
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #eaeaea;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.calendar-container {
+    flex: 1;
+    margin-right: 20px;
+}
+
+#calendar {
+    display: inline-block;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+    flex: 2;
+    text-align: center;
+}
+
+h2 {
+    color: #007bff;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+#searchBox {
+    margin-bottom: 20px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-width: 400px;
+    font-size: 1.2em;
+}
+
+form {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    text-align: left;
+    width: 100%;
+    max-width: 600px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 1.2em;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1.2em;
+    display: block;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#customerRecords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 300px;
+    text-align: left;
+}
+
+.card h4 {
+    margin-top: 0;
+    color: #007bff;
+}
+
+.card p {
+    margin: 5px 0;
+}
+
+.card button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1em;
+}
+
+.edit-button {
+    background-color: #ffc107;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #e0a800;
+}
+
+.delete-button {
+    background-color: #d9534f;
+    color: white;
+    margin-left: 10px;
+}
+
+.delete-button:hover {
+    background-color: #c9302c;
+}
+
+#totals {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#totals h3 {
+    color: #007bff;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.calendar-month {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.calendar-day.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+#calendarHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #007bff;
+    padding: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+javascript:
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('customerForm');
+    const searchBox = document.getElementById('searchBox');
+    const customerRecords = document.getElementById('customerRecords');
+    const totalPaid = document.getElementById('totalPaid');
+    const totalRemaining = document.getElementById('totalRemaining');
+    const calendar = document.getElementById('calendar');
+    let selectedDate = new Date().toLocaleDateString('en-GB'); // Default to today
+
+    let calendarData = JSON.parse(localStorage.getItem('calendarData')) || {};
+
+    function renderCustomers(date) {
+        customerRecords.innerHTML = '';
+        let totalPaidAmount = 0;
+        let totalRemainingAmount = 0;
+
+        if (calendarData[date]) {
+            calendarData[date].forEach(customer => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h4>${customer.name}</h4>
+                    <p><strong>Water Taken:</strong> ${customer.water} liters</p>
+                    <p><strong>Amount Paid:</strong> ${customer.amountPaid} INR</p>
+                    <p><strong>Remaining Amount:</strong> ${customer.remainingAmount} INR</p>
+                    <button class="edit-button" data-name="${customer.name}">Edit</button>
+                    <button class="delete-button" data-name="${customer.name}">Delete</button>
+                `;
+                customerRecords.appendChild(card);
+
+                totalPaidAmount += customer.amountPaid;
+                totalRemainingAmount += customer.remainingAmount;
+            });
+        }
+
+        totalPaid.textContent = totalPaidAmount;
+        totalRemaining.textContent = totalRemainingAmount;
+    }
+
+    function updateLocalStorage() {
+        localStorage.setItem('calendarData', JSON.stringify(calendarData));
+    }
+
+    function initializeCalendar() {
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+
+        function renderCalendar(year, month) {
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+
+            let calendarHtml = '<div id="calendarHeader">';
+            calendarHtml += `<button class="calendar-button" id="prevMonth">←</button>`;
+            calendarHtml += `<span>${firstDay.toLocaleString('default', { month: 'long' })} ${year}</span>`;
+            calendarHtml += `<button class="calendar-button" id="nextMonth">→</button>`;
+            calendarHtml += '</div>';
+
+            calendarHtml += '<div class="calendar-month">';
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = new Date(year, month, i);
+                const formattedDate = date.toLocaleDateString('en-GB');
+                calendarHtml += `<div class="calendar-day" data-date="${formattedDate}">${i}</div>`;
+            }
+            calendarHtml += '</div>';
+
+            calendar.innerHTML = calendarHtml;
+
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                const prevMonth = new Date(year, month - 1);
+                renderCalendar(prevMonth.getFullYear(), prevMonth.getMonth());
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                const nextMonth = new Date(year, month + 1);
+                renderCalendar(nextMonth.getFullYear(), nextMonth.getMonth());
+            });
+
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                day.addEventListener('click', (e) => {
+                    selectedDate = e.target.getAttribute('data-date');
+                    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                    renderCustomers(selectedDate);
+                });
+            });
+        }
+
+        renderCalendar(currentYear, currentMonth);
+    }
+
+    function addCustomer() {
+        const name = document.getElementById('customerName').value;
+        const water = parseFloat(document.getElementById('waterAmount').value);
+        const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+        const remainingAmount = water - amountPaid;
+
+        if (amountPaid > water) {
+            alert("Amount Paid cannot exceed Water Taken.");
+            return;
+        }
+
+        if (!calendarData[selectedDate]) {
+            calendarData[selectedDate] = [];
+        }
+
+        const existingCustomerIndex = calendarData[selectedDate].findIndex(c => c.name === name);
+        if (existingCustomerIndex > -1) {
+            calendarData[selectedDate][existingCustomerIndex] = {
+                name,
+                water,
+                amountPaid,
+                remainingAmount
+            };
+        } else {
+            calendarData[selectedDate].push({
+                name,
+                water,
+                amountPaid,
+                remainingAmount
+            });
+        }
+
+        updateLocalStorage();
+        renderCustomers(selectedDate);
+    }
+
+    function deleteCustomer(name) {
+        const index = calendarData[selectedDate].findIndex(c => c.name === name);
+        if (index > -1) {
+            calendarData[selectedDate].splice(index, 1);
+            if (calendarData[selectedDate].length === 0) {
+                delete calendarData[selectedDate];
+            }
+            updateLocalStorage();
+            renderCustomers(selectedDate);
+        }
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        addCustomer();
+    });
+
+    customerRecords.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-button')) {
+            const name = e.target.getAttribute('data-name');
+            deleteCustomer(name);
+        }
+    });
+
+    searchBox.addEventListener('input', () => {
+        const searchText = searchBox.value.toLowerCase();
+        const cards = document.querySelectorAll('#customerRecords .card');
+
+        cards.forEach(card => {
+            const name = card.querySelector('h4').textContent.toLowerCase();
+            card.style.display = name.includes(searchText) ? '' : 'none';
+        });
+    });
+
+    initializeCalendar();
+    renderCustomers(selectedDate);
+});
+
+

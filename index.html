@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Supply Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="calendar-container">
+            <div id="calendar"></div>
+        </div>
+
+        <div class="content">
+            <h2>Water Supply Management System</h2>
+            <input type="text" id="searchBox" placeholder="Search customer by name...">
+
+            <form id="customerForm">
+                <label for="customerName">Customer Name:</label>
+                <input type="text" id="customerName" pattern="[A-Za-z\s]+" title="Please enter only alphabets" required>
+
+                <label for="waterAmount">Water (liters):</label>
+                <input type="number" id="waterAmount" min="0" step="any" required>
+
+                <label for="amountPaid">Amount Paid (INR):</label>
+                <input type="number" id="amountPaid" min="0" step="any" required>
+
+                <button type="submit">Add/Update Customer</button>
+            </form>
+
+            <div id="customerRecords"></div>
+
+            <div id="totals">
+                <h3>Total Amount Paid: <span id="totalPaid">0</span> INR</h3>
+                <h3>Total Amount Remaining: <span id="totalRemaining">0</span> INR</h3>
+            </div>
+
+            <button id="downloadExcel">Download as Excel</button>
+            <button id="downloadPDF">Download as PDF</button>
+
+            <h3>Select Month to Download Monthly Data:</h3>
+            <input type="month" id="monthlyDataSelector">
+            <button id="downloadMonthlyData">Download Monthly Data</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
